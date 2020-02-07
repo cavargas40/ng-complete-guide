@@ -7,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RecipeDetailComponent implements OnInit {
 
+  public recipes: Array<any> = [];
+
   constructor() { }
 
   ngOnInit() {

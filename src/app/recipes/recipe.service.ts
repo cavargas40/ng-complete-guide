@@ -1,5 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { Recipe } from './recipe.model';
+import { Ingredient } from 'app/shared/ingredient.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,22 @@ export class RecipeService {
 
   private recipes: Array<Recipe> = [
     new Recipe({
-      name: 'A Test Recipe',
-      description: 'This is simply a test',
-      imagePath: 'https://assets.bonappetit.com/photos/5d7296eec4af4d0008ad1263/16:9/w_1000,c_limit/Basically-Gojuchang-Chicken-Recipe-Wide.jpg'
+      name: 'Tasty Schnitzel',
+      description: 'A super-tasty Schnitzel - just awesome!',
+      imagePath: 'https://img.taste.com.au/hNadnLUF/taste/2016/11/chicken-schnitzel-77551-1.jpeg',
+      ingredients: [
+        new Ingredient({ name: 'Chicken', amount: 1 }),
+        new Ingredient({ name: 'French Fries', amount: 20 })
+      ]
     }),
     new Recipe({
-      name: 'Another Test Recipe',
-      description: 'This is simply a test',
-      imagePath: 'https://assets.bonappetit.com/photos/5d7296eec4af4d0008ad1263/16:9/w_1000,c_limit/Basically-Gojuchang-Chicken-Recipe-Wide.jpg'
+      name: 'Big Fat Burguer',
+      description: 'What else you need to say?',
+      imagePath: 'https://bk-emea-prd.s3.amazonaws.com/sites/burgerking.co.uk/files/Product_BB_SteakhouseAngus-UK-2_500x540px.png',
+      ingredients: [
+        new Ingredient({ name: 'Buns', amount: 2 }),
+        new Ingredient({ name: 'Meat', amount: 1 })
+      ]
     }),
   ];
 

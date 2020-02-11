@@ -7,15 +7,9 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class HeaderComponent implements OnInit {
 
-  @Output() onSelectMenu = new EventEmitter<string>()
-
   constructor() { }
 
   ngOnInit() {
-  }
-
-  selectMenu(menu: string){
-    this.onSelectMenu.emit(menu);
   }
 
 }

@@ -87,4 +87,9 @@ export class RecipeEditComponent implements OnInit {
     this.router.navigate(['../'], { relativeTo: this.activatedRoute });
   }
 
+  onDeleteIngredient(index: number) {
+    (<FormArray>this.recipeForm.get('ingredients')).removeAt(index);
+    //(<FormArray>this.recipeForm.get('ingredients')).clear(); // if you want to remove all the item (only works in Angular 8+)
+  }
+
 }

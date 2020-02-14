@@ -1,8 +1,5 @@
 import { Injectable } from "@angular/core";
-import {
-  HttpClient,
-  HttpErrorResponse
-} from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { catchError, tap } from "rxjs/operators";
 import { throwError, BehaviorSubject } from "rxjs";
 import { User } from "./user.model";
@@ -68,6 +65,10 @@ export class AuthService {
           );
         })
       );
+  }
+
+  logout() {
+    this.user.next(null);
   }
 
   private handleAuthentication(

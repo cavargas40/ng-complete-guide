@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { map, tap } from "rxjs/operators";
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { map, tap, take, exhaustMap } from "rxjs/operators";
 import { Recipe } from "app/recipes/recipe.model";
 import { RecipeService } from "app/recipes/recipe.service";
+import { AuthService } from "app/auth/auth.service";
 
 @Injectable({
   providedIn: "root"
@@ -13,7 +14,8 @@ export class DataStorageService {
 
   constructor(
     private httpClient: HttpClient,
-    private recipeService: RecipeService
+    private recipeService: RecipeService,
+    private authService: AuthService
   ) {}
 
   storeRecipes() {
@@ -24,7 +26,13 @@ export class DataStorageService {
   }
 
   fetchRecipes() {
-    return this.httpClient.get<Array<Recipe>>(this.url).pipe(
+    return this.authService.user.pipe(
+      take(1),
+      exhaustMap(user => {
+        return this.httpClient.get<Array<Recipe>>(this.url, {
+          params: new HttpParams().set("auth", user.token)
+        });
+      }),
       map(recipes => {
         return recipes.map(recipe => {
           return {

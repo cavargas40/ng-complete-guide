@@ -1,9 +1,9 @@
-import { Injectable } from "@angular/core";
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { catchError, tap } from "rxjs/operators";
-import { throwError, BehaviorSubject } from "rxjs";
-import { User } from "./user.model";
-import { Router } from "@angular/router";
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError, tap } from 'rxjs/operators';
+import { throwError, BehaviorSubject } from 'rxjs';
+import { User } from './user.model';
+import { Router } from '@angular/router';
 
 export interface AuthResponseData {
   kind: string;
@@ -15,11 +15,11 @@ export interface AuthResponseData {
   registered?: boolean;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   public user = new BehaviorSubject<User>(null);
   private tokenExpirationTimer: any;
-  private apiKey: string = "AIzaSyDxrXSQQYVLIO29y0OBM80AvFolibE5ZzQ";
+  private apiKey: string = 'AIzaSyDxrXSQQYVLIO29y0OBM80AvFolibE5ZzQ';
 
   constructor(private httpClient: HttpClient, private router: Router) {}
 
@@ -71,8 +71,8 @@ export class AuthService {
 
   logout() {
     this.user.next(null);
-    this.router.navigate(["/auth"]);
-    localStorage.removeItem("userData");
+    this.router.navigate(['/auth']);
+    localStorage.removeItem('userData');
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
     }
@@ -80,7 +80,7 @@ export class AuthService {
   }
 
   autoLogin() {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem('userData'));
     if (!userData) {
       return;
     }
@@ -114,23 +114,23 @@ export class AuthService {
     const user = new User(email, userId, token, expirationDate);
     this.user.next(user);
     this.autoLogout(expiresIn * 1000);
-    localStorage.setItem("userData", JSON.stringify(user));
+    localStorage.setItem('userData', JSON.stringify(user));
   }
 
   private handleError(errorRes: HttpErrorResponse) {
-    let errorMessage = "An unknown error ocurred!";
+    let errorMessage = 'An unknown error ocurred!';
     if (!errorRes.error || !errorRes.error.error) {
       return throwError(errorMessage);
     }
     switch (errorRes.error.error.message) {
-      case "EMAIL_EXISTS":
-        errorMessage = "This email already exists";
+      case 'EMAIL_EXISTS':
+        errorMessage = 'This email already exists';
         break;
-      case "EMAIL_NOT_FOUND":
-        errorMessage = "This email does not exists";
+      case 'EMAIL_NOT_FOUND':
+        errorMessage = 'This email does not exists';
         break;
-      case "INVALID_PASSWORD":
-        errorMessage = "This password is not correct";
+      case 'INVALID_PASSWORD':
+        errorMessage = 'This password is not correct';
         break;
     }
     return throwError(errorMessage);

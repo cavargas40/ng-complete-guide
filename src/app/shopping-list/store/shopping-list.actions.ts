@@ -1,17 +1,19 @@
 import { Action } from '@ngrx/store';
 import { Ingredient } from 'app/shared/ingredient.model';
 
-export const ADD_INGREDIENT = 'ADD_INGREDIENT';
-export const ADD_INGREDIENTS = 'ADD_INGREDIENTS';
+export enum ShoppingListActionTypes {
+  AddIngredient = '[SHOPPING-LIST] ADD_INGREDIENT',
+  AddIngredients = '[SHOPPING-LIST] ADD_INGREDIENTS'
+}
 
 export class AddIngredient implements Action {
-  readonly type = ADD_INGREDIENT;
+  readonly type = ShoppingListActionTypes.AddIngredient;
 
   constructor(public payload: Ingredient) {}
 }
 
 export class AddIngredients implements Action {
-  readonly type = ADD_INGREDIENTS;
+  readonly type = ShoppingListActionTypes.AddIngredients;
 
   constructor(public payload: Array<Ingredient>) {}
 }

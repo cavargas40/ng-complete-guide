@@ -120,6 +120,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "ng-complete-guide"
+    }
+  },
+  "defaultProject": "ng-complete-guide",
+  "cli": {
+    "analytics": false
+  }
 }

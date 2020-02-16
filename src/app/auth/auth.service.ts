@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { catchError, tap } from 'rxjs/operators';
 import { throwError, BehaviorSubject } from 'rxjs';
+import { Store } from '@ngrx/store';
+
 import { User } from './user.model';
-import { Router } from '@angular/router';
+import { AppState } from 'app/store/app.reducer';
+import { Login, Logout } from './store/auth.action';
 
 export interface AuthResponseData {
   kind: string;
@@ -17,11 +21,15 @@ export interface AuthResponseData {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  public user = new BehaviorSubject<User>(null);
+  //public user = new BehaviorSubject<User>(null);
   private tokenExpirationTimer: any;
   private apiKey: string = 'AIzaSyDxrXSQQYVLIO29y0OBM80AvFolibE5ZzQ';
 
-  constructor(private httpClient: HttpClient, private router: Router) {}
+  constructor(
+    private httpClient: HttpClient,
+    private router: Router,
+    private store: Store<AppState>
+  ) {}
 
   signup(email: string, password: string) {
     return this.httpClient
@@ -70,7 +78,8 @@ export class AuthService {
   }
 
   logout() {
-    this.user.next(null);
+    //this.user.next(null);
+    this.store.dispatch(new Logout());
     this.router.navigate(['/auth']);
     localStorage.removeItem('userData');
     if (this.tokenExpirationTimer) {
@@ -91,7 +100,14 @@ export class AuthService {
       new Date(userData._tokenExpirationDate)
     );
     if (loadedUser.token) {
-      this.user.next(loadedUser);
+      this.store.dispatch(
+        new Login({
+          email: loadedUser.email,
+          userId: loadedUser.id,
+          token: loadedUser.token,
+          expirationDate: new Date(userData._tokenExpirationDate)
+        })
+      );
       const expirationDuration =
         new Date(userData._tokenExpiration).getTime() - new Date().getTime();
       this.autoLogout(expirationDuration);
@@ -112,7 +128,8 @@ export class AuthService {
   ) {
     const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
     const user = new User(email, userId, token, expirationDate);
-    this.user.next(user);
+    //this.user.next(user);
+    this.store.dispatch(new Login({ email, userId, token, expirationDate }));
     this.autoLogout(expiresIn * 1000);
     localStorage.setItem('userData', JSON.stringify(user));
   }

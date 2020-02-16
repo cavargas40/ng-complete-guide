@@ -10,7 +10,7 @@ import {
   DeleteIngredient,
   StopEdit
 } from '../store/shopping-list.actions';
-import { AppState } from '../store/shopping-list.reducer';
+import { AppState } from 'app/store/app.reducer';
 
 @Component({
   selector: 'app-shopping-edit',

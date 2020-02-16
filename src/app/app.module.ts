@@ -19,7 +19,7 @@ import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component
 import { AuthComponent } from './auth/auth.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { AuthInterceptorService } from './auth/auth-interceptor.service';
-import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer';
+import { appReducer } from './store/app.reducer';
 
 @NgModule({
   declarations: [
@@ -43,7 +43,7 @@ import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer
     ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,
-    StoreModule.forRoot({ shoppingList: shoppingListReducer })
+    StoreModule.forRoot(appReducer),
   ],
   providers: [
     {

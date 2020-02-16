@@ -16,12 +16,27 @@ export function authReducer(
       );
       return {
         ...state,
-        user
+        user,
+        authError: null,
+        loading: false
       };
     case AuthActionTypes.Logout:
       return {
         ...state,
         user: null
+      };
+    case AuthActionTypes.LoginStart:
+      return {
+        ...state,
+        authError: null,
+        loading: true,
+      };
+    case AuthActionTypes.LoginFail:
+      return {
+        ...state,
+        user: null,
+        authError: action.payload,
+        loading: false,
       };
     default:
       return state;

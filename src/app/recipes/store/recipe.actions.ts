@@ -6,7 +6,8 @@ export enum RecipeActionTypes {
   fetchRecipes = '[RECIPES] FETCH_RECIPES',
   addRecipe = '[RECIPES] ADD_RECIPE',
   updateRecipe = '[RECIPES] UPDATE_RECIPE',
-  deleteRecipe = '[RECIPES] DELETE_RECIPE'
+  deleteRecipe = '[RECIPES] DELETE_RECIPE',
+  storeRecipes = '[RECIPES] STORE_RECIPES'
 }
 
 export class SetRecipes implements Action {
@@ -37,9 +38,14 @@ export class DeleteRecipe implements Action {
   constructor(public payload: number) {}
 }
 
+export class StoreRecipes implements Action {
+  readonly type = RecipeActionTypes.storeRecipes;
+}
+
 export type RecipesActions =
   | SetRecipes
   | FetchRecipes
   | AddRecipe
   | UpdateRecipe
-  | DeleteRecipe;
+  | DeleteRecipe
+  | StoreRecipes;

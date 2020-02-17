@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
@@ -7,16 +7,19 @@ import { map } from 'rxjs/operators';
 import { RecipeService } from '../recipe.service';
 import { Recipe } from '../recipe.model';
 import { AppState } from 'app/store/app.reducer';
+import { UpdateRecipe, AddRecipe } from '../store/recipe.actions';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-recipe-edit',
   templateUrl: './recipe-edit.component.html',
   styleUrls: ['./recipe-edit.component.css']
 })
-export class RecipeEditComponent implements OnInit {
+export class RecipeEditComponent implements OnInit, OnDestroy {
   public id: number;
   public editMode: boolean = false;
   public recipeForm: FormGroup;
+  private subscription: Subscription;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -33,6 +36,12 @@ export class RecipeEditComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
   private initForm() {
     let myRecipe = new Recipe({
       name: '',
@@ -44,7 +53,7 @@ export class RecipeEditComponent implements OnInit {
 
     if (this.editMode) {
       //myRecipe = this.recipeService.getRecipe(this.id);
-      this.store
+      this.subscription = this.store
         .select('recipes')
         .pipe(
           map(recipeState => {
@@ -83,9 +92,13 @@ export class RecipeEditComponent implements OnInit {
 
   onSubmit() {
     if (this.editMode) {
-      this.recipeService.updateRecipe(this.id, this.recipeForm.value);
+      //this.recipeService.updateRecipe(this.id, this.recipeForm.value);
+      this.store.dispatch(
+        new UpdateRecipe({ index: this.id, newRecipe: this.recipeForm.value })
+      );
     } else {
-      this.recipeService.addRecipe(this.recipeForm.value);
+      //this.recipeService.addRecipe(this.recipeForm.value);
+      this.store.dispatch(new AddRecipe(this.recipeForm.value));
     }
     this.onCancel();
   }

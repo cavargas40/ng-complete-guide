@@ -7,6 +7,7 @@ import { DataStorageService } from 'app/shared/data-storage.service';
 import { User } from 'app/auth/user.model';
 import { AppState } from 'app/store/app.reducer';
 import { Logout } from 'app/auth/store/auth.actions';
+import { FetchRecipes } from 'app/recipes/store/recipe.actions';
 
 @Component({
   selector: 'app-header',
@@ -40,7 +41,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onFetchData() {
-    this.dataStorageService.fetchRecipes().subscribe();
+    // this.dataStorageService.fetchRecipes().subscribe();
+    this.store.dispatch(new FetchRecipes());
   }
 
   onLogout() {

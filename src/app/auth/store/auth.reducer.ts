@@ -1,5 +1,5 @@
 import { initialAuthState, AuthState } from './auth.state';
-import { AuthActions, AuthActionTypes } from './auth.action';
+import { AuthActions, AuthActionTypes } from './auth.actions';
 import { User } from '../user.model';
 
 export function authReducer(
@@ -7,7 +7,7 @@ export function authReducer(
   action: AuthActions
 ) {
   switch (action.type) {
-    case AuthActionTypes.Login:
+    case AuthActionTypes.AuthenticateSuccess:
       const user = new User(
         action.payload.email,
         action.payload.userId,
@@ -26,17 +26,23 @@ export function authReducer(
         user: null
       };
     case AuthActionTypes.LoginStart:
+    case AuthActionTypes.SignUpStart:
       return {
         ...state,
         authError: null,
-        loading: true,
+        loading: true
       };
-    case AuthActionTypes.LoginFail:
+    case AuthActionTypes.AuthenticateFail:
       return {
         ...state,
         user: null,
         authError: action.payload,
-        loading: false,
+        loading: false
+      };
+    case AuthActionTypes.ClearError:
+      return {
+        ...state,
+        authError: null
       };
     default:
       return state;

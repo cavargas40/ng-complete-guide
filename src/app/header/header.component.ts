@@ -7,6 +7,7 @@ import { DataStorageService } from 'app/shared/data-storage.service';
 import { AuthService } from 'app/auth/auth.service';
 import { User } from 'app/auth/user.model';
 import { AppState } from 'app/store/app.reducer';
+import { Logout } from 'app/auth/store/auth.actions';
 
 @Component({
   selector: 'app-header',
@@ -45,6 +46,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onLogout() {
-    this.authService.logout();
+    this.store.dispatch(new Logout());
   }
 }

@@ -94,7 +94,12 @@ export class AuthEffects {
   autoLogin = this.actions$.pipe(
     ofType(AuthActionTypes.AutoLogin),
     map(() => {
-      const userData = JSON.parse(localStorage.getItem('userData'));
+      const userData: {
+        email: string;
+        id: string;
+        _token: string;
+        _tokenExpirationDate: string;
+      } = JSON.parse(localStorage.getItem('userData'));
       if (!userData) {
         return { type: 'DUMMY' };
       }
@@ -106,7 +111,7 @@ export class AuthEffects {
       );
       if (loadedUser.token) {
         const expirationDuration =
-          new Date(userData._tokenExpiration).getTime() - new Date().getTime();
+          new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
         this.authService.setLogoutTimer(expirationDuration);
 
         return new AuthenticateSuccess({

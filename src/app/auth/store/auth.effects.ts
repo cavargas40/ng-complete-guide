@@ -14,6 +14,7 @@ import {
   SignupStart
 } from './auth.actions';
 import { User } from '../user.model';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class AuthEffects {
@@ -31,6 +32,9 @@ export class AuthEffects {
           }
         )
         .pipe(
+          tap(resData => {
+            this.authService.setLogoutTimer(+resData.expiresIn * 1000);
+          }),
           map(resData =>
             handleAuthentication(
               +resData.expiresIn,
@@ -58,6 +62,9 @@ export class AuthEffects {
           }
         )
         .pipe(
+          tap(resData => {
+            this.authService.setLogoutTimer(+resData.expiresIn * 1000);
+          }),
           map(resData =>
             handleAuthentication(
               +resData.expiresIn,
@@ -75,7 +82,7 @@ export class AuthEffects {
     dispatch: false
   })
   authRedirect = this.actions$.pipe(
-    ofType(AuthActionTypes.AuthenticateSuccess, AuthActionTypes.Logout),
+    ofType(AuthActionTypes.AuthenticateSuccess),
     tap(() => {
       this.router.navigate(['/']);
     })
@@ -96,15 +103,16 @@ export class AuthEffects {
         new Date(userData._tokenExpirationDate)
       );
       if (loadedUser.token) {
+        const expirationDuration =
+          new Date(userData._tokenExpiration).getTime() - new Date().getTime();
+        this.authService.setLogoutTimer(expirationDuration);
+
         return new AuthenticateSuccess({
           email: loadedUser.email,
           userId: loadedUser.id,
           token: loadedUser.token,
           expirationDate: new Date(userData._tokenExpirationDate)
         });
-        // const expirationDuration =
-        //   new Date(userData._tokenExpiration).getTime() - new Date().getTime();
-        // this.autoLogout(expirationDuration);
       }
 
       return { type: 'DUMMY' };
@@ -117,14 +125,17 @@ export class AuthEffects {
   authLogout = this.actions$.pipe(
     ofType(AuthActionTypes.Logout),
     tap(() => {
+      this.authService.clearLogoutTimer();
       localStorage.removeItem('userData');
+      this.router.navigate(['/auth']);
     })
   );
 
   constructor(
     private actions$: Actions,
     private httpClient: HttpClient,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 }
 

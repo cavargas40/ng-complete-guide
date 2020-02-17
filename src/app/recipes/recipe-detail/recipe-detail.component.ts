@@ -1,7 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+
 import { Recipe } from '../recipe.model';
 import { RecipeService } from '../recipe.service';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { AppState } from 'app/store/app.reducer';
+import { map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-recipe-detail',
@@ -9,20 +13,30 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
   styleUrls: ['./recipe-detail.component.css']
 })
 export class RecipeDetailComponent implements OnInit {
-
   recipeId: number;
   recipe: Recipe;
 
-  constructor(private recipeService: RecipeService, 
+  constructor(
+    private recipeService: RecipeService,
     private activatedRouter: ActivatedRoute,
-    private router: Router) { }
+    private router: Router,
+    private store: Store<AppState>
+  ) {}
 
   ngOnInit() {
-    //const id = this.activatedRouter.snapshot.params['id'];
     this.activatedRouter.params
-      .subscribe((params: Params) => {
-        this.recipeId = +params['id']
-        this.recipe = this.recipeService.getRecipe(this.recipeId);
+      .pipe(
+        map(params => +params['id']),
+        switchMap(id => {
+          this.recipeId = id;
+          return this.store.select('recipes');
+        }),
+        map(recipesState =>
+          recipesState.recipes.find((recipe, index) => index === this.recipeId)
+        )
+      )
+      .subscribe(recipe => {
+        this.recipe = recipe;
       });
   }
 

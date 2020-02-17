@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -49,7 +50,8 @@ import { environment } from '../environments/environment';
     AppRoutingModule,
     StoreModule.forRoot(appReducer),
     EffectsModule.forRoot([AuthEffects]),
-    environment.production ? [] : StoreDevtoolsModule.instrument({maxAge: 35})
+    environment.production ? [] : StoreDevtoolsModule.instrument({maxAge: 35}),
+    StoreRouterConnectingModule.forRoot(),
   ],
   providers: [
     {

@@ -7,6 +7,8 @@ export enum AuthActionTypes {
   AuthenticateFail = '[AUTH] AUTHENTICATE_FAIL',
   SignUpStart = '[AUTH] SIGNUP_START',
   ClearError = '[AUTH] CLEAR_ERROR',
+  AutoLogin = '[AUTH] AUTO_LOGIN',
+
 }
 
 export class AuthenticateSuccess implements Action {
@@ -48,6 +50,9 @@ export class ClearError implements Action {
   readonly type = AuthActionTypes.ClearError;
 }
 
+export class AutoLogin implements Action {
+  readonly type = AuthActionTypes.AutoLogin;
+}
 
 export type AuthActions =
   | AuthenticateSuccess
@@ -55,4 +60,5 @@ export type AuthActions =
   | LoginStart
   | AuthenticateFail
   | SignupStart
-  | ClearError;
+  | ClearError
+  | AutoLogin;

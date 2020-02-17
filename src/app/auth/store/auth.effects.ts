@@ -13,42 +13,7 @@ import {
   AuthenticateFail,
   SignupStart
 } from './auth.actions';
-
-const handleAuthentication = (
-  expiresIn: number,
-  email: string,
-  userId: string,
-  token: string
-) => {
-  const expirationDate = new Date(new Date().getTime() + +expiresIn * 1000);
-
-  return new AuthenticateSuccess({
-    email,
-    userId,
-    token,
-    expirationDate
-  });
-};
-
-const handleError = (errorRes: any) => {
-  let errorMessage = 'An unknown error ocurred!';
-  if (!errorRes.error || !errorRes.error.error) {
-    return of(new AuthenticateFail(errorMessage));
-  }
-  switch (errorRes.error.error.message) {
-    case 'EMAIL_EXISTS':
-      errorMessage = 'This email already exists';
-      break;
-    case 'EMAIL_NOT_FOUND':
-      errorMessage = 'This email does not exists';
-      break;
-    case 'INVALID_PASSWORD':
-      errorMessage = 'This password is not correct';
-      break;
-  }
-
-  return of(new AuthenticateFail(errorMessage));
-};
+import { User } from '../user.model';
 
 @Injectable()
 export class AuthEffects {
@@ -116,6 +81,46 @@ export class AuthEffects {
     })
   );
 
+  @Effect()
+  autoLogin = this.actions$.pipe(
+    ofType(AuthActionTypes.AutoLogin),
+    map(() => {
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      if (!userData) {
+        return { type: 'DUMMY' };
+      }
+      const loadedUser = new User(
+        userData.email,
+        userData.id,
+        userData._token,
+        new Date(userData._tokenExpirationDate)
+      );
+      if (loadedUser.token) {
+        return new AuthenticateSuccess({
+          email: loadedUser.email,
+          userId: loadedUser.id,
+          token: loadedUser.token,
+          expirationDate: new Date(userData._tokenExpirationDate)
+        });
+        // const expirationDuration =
+        //   new Date(userData._tokenExpiration).getTime() - new Date().getTime();
+        // this.autoLogout(expirationDuration);
+      }
+
+      return { type: 'DUMMY' };
+    })
+  );
+
+  @Effect({
+    dispatch: false
+  })
+  authLogout = this.actions$.pipe(
+    ofType(AuthActionTypes.Logout),
+    tap(() => {
+      localStorage.removeItem('userData');
+    })
+  );
+
   constructor(
     private actions$: Actions,
     private httpClient: HttpClient,
@@ -132,3 +137,41 @@ export interface AuthResponseData {
   localId: string;
   registered?: boolean;
 }
+
+const handleAuthentication = (
+  expiresIn: number,
+  email: string,
+  userId: string,
+  token: string
+) => {
+  const expirationDate = new Date(new Date().getTime() + +expiresIn * 1000);
+  const user = new User(email, userId, token, expirationDate);
+  localStorage.setItem('userData', JSON.stringify(user));
+
+  return new AuthenticateSuccess({
+    email,
+    userId,
+    token,
+    expirationDate
+  });
+};
+
+const handleError = (errorRes: any) => {
+  let errorMessage = 'An unknown error ocurred!';
+  if (!errorRes.error || !errorRes.error.error) {
+    return of(new AuthenticateFail(errorMessage));
+  }
+  switch (errorRes.error.error.message) {
+    case 'EMAIL_EXISTS':
+      errorMessage = 'This email already exists';
+      break;
+    case 'EMAIL_NOT_FOUND':
+      errorMessage = 'This email does not exists';
+      break;
+    case 'INVALID_PASSWORD':
+      errorMessage = 'This password is not correct';
+      break;
+  }
+
+  return of(new AuthenticateFail(errorMessage));
+};
